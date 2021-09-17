@@ -31,7 +31,6 @@ const expensesService:ExpensesService = new ExpensesServiceImpl();
 // POST /weddings
 app.post("/weddings", async(req,res)=>{
     try {
-        res.set('Access-Control-Allow-Origin', '*');
         let wedding:Wedding = req.body;
         wedding = await weddingService.registerWedding(wedding);
         res.send(wedding);
@@ -46,7 +45,6 @@ app.post("/weddings", async(req,res)=>{
 // GET /weddings
 app.get("/weddings", async(req,res)=>{
     try{
-        res.set('Access-Control-Allow-Origin', '*');
         const weddings:Wedding[] = await weddingService.retrieveAllWeddings();
         res.status(200);
         res.send(weddings);
@@ -64,7 +62,6 @@ app.get("/weddings", async(req,res)=>{
 // GET /weddings/:id
 app.get("/weddings/:id", async(req,res) => {
     try {
-        res.set('Access-Control-Allow-Origin', '*');
         const weddingId = Number(req.params.id);
         const newWedding:Wedding = await weddingService.retrieveWeddingById(weddingId);
         const wedding = await weddingService.updateWedding(newWedding);
