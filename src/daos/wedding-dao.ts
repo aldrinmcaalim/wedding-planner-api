@@ -1,17 +1,16 @@
-import {Wedding} from "../entities";
+import { Wedding } from "../entities";
 
 export interface WeddingDAO {
+  // Create
+  weddingCreator(wedding: Wedding): Promise<Wedding>;
 
-    // CREATE
-    createWedding(wedding:Wedding):Promise<Wedding>;
+  // Read
+  allWeddings(): Promise<Wedding[]>;
+  weddingByID(weddingID: number): Promise<Wedding>;
 
-    // READ
-    getAllWeddings():Promise<Wedding[]>;
-    getWeddingById(weddingId:number):Promise<Wedding>;
+  // Update
+  updateWedding(wedding: Wedding): Promise<Wedding>;
 
-    // UPDATE 
-    updateWedding(updateWedding:Wedding):Promise<Wedding>;
-
-    // DELETE
-    deleteWeddingById(weddingId:number):Promise<boolean>;
+  // Delete
+  deleteWedding(weddingID: number): Promise<boolean>;
 }

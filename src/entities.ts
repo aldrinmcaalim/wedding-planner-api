@@ -1,18 +1,19 @@
 export class Wedding {
-    constructor(
-        public weddingId:number,
-        public weddingDate:string,
-        public weddingLocation:string,
-        public weddingName:string,
-        public weddingBudget: number
-    ){}
+  constructor(
+    public weddingID: number,
+    public weddingDate: string,
+    public weddingLocation: string,
+    public weddingName: string,
+    public weddingBudget: number,
+    public ssn: number
+  ) {}
 }
 
-export class Expenses {
-    constructor (
-        public expensesReason: string,
-        public expensesAmount: number,
-        public expensesId: number,
-        public weddingId:number
-    ){}
+export class Expense {
+  constructor(
+    public expenseID: number,
+    public expenseReason: string,
+    public expenseAmount: number,
+    public weddingID: number
+  ) {}
 }

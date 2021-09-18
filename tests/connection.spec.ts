@@ -1,10 +1,9 @@
-import {client} from "../src/connection";
+import { client } from "../src/connection";
 
-test("Should have a connection ", async() => {
-    const result = await client.query("select * from wedding");
-    console.log(result);
-})
+test("Should have a connection ", async () => {
+  const result = await client.query("select * from wedding");
+});
 
-afterAll(async() => {
-    client.end();
-})
+afterAll(async () => {
+  await client.end();
+});

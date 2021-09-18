@@ -1,15 +1,12 @@
-import { Wedding } from "../entities";
+import { Wedding, Expense } from "../entities";
 
 export default interface WeddingService {
+  createWedding(wedding: Wedding): Promise<Wedding>;
 
-    registerWedding(wedding:Wedding):Promise<Wedding>;
+  allWeddings(): Promise<Wedding[]>;
+  weddingByID(weddingID: number): Promise<Wedding>;
 
-    retrieveAllWeddings():Promise<Wedding[]>
+  updateWedding(wedding: Wedding, weddingID: number): Promise<Wedding>;
 
-    retrieveWeddingById(weddingId:number):Promise<Wedding>;
-
-    updateWedding(wedding:Wedding):Promise<Wedding>;
-
-    removeWeddingById(weddingId:number):Promise<boolean>;
-
+  deleteWedding(weddingID: number): Promise<boolean>;
 }
