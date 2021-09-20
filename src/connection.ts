@@ -1,5 +1,5 @@
 import {Client} from "pg";
-require("dotenv").config({path:'C:\\Users\\aldri\\Documents\\planner-service\\wedding-planner-api\\app.env'});
+require("dotenv").config({path:'/Users/Aldrin/Documents/planner-service/wedding-planner-api/app.env'});
 
 export const client = new Client ({
     user: 'postgres',

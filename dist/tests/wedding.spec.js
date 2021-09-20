@@ -35,95 +35,93 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-var entities_1 = require("../src/entities");
 var connection_1 = require("../src/connection");
-var expenses_dao_postgres_1 = require("../src/daos/expenses-dao-postgres");
-var expensesDAO = new expenses_dao_postgres_1.ExpensesDaoPostgres();
-var testWedding = new entities_1.Wedding(0, "2022-01-30", "Dallas, TX", "Jane and John", 7000);
-var testExpenses = new entities_1.Expenses("Need for wedding", 400, 0, testWedding.weddingId + 1);
-test("Create an expense", function () { return __awaiter(void 0, void 0, void 0, function () {
+var wedding_dao_postgres_impl_1 = __importDefault(require("../src/daos/wedding-dao-postgres-impl"));
+var entities_1 = require("../src/entities");
+var weddingDAO = new wedding_dao_postgres_impl_1["default"]();
+var createSSN = function () {
+    var ssn = Math.floor(100000 + Math.random() * 900000);
+    return ssn;
+};
+test("Create our first wedding account: ", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var testWedding, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                testWedding = new entities_1.Wedding(0, "2022/11/12", "Austin, TX", "Jane and Smith", 30000, createSSN());
+                return [4 /*yield*/, weddingDAO.weddingCreator(testWedding)];
+            case 1:
+                result = _a.sent();
+                expect(result.weddingID).not.toBe(0);
+                return [2 /*return*/];
+        }
+    });
+}); });
+test("Create our 3 additional weddings: ", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var testWedding1, testWedding2, testWedding3, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                testWedding1 = new entities_1.Wedding(0, "2021/13/12", "New York City, NY", "Samantha and Spencer", 25000, createSSN());
+                testWedding2 = new entities_1.Wedding(0, "2022/10/01", "Los Angeles, CA", "Elizabeth and Robert", 15000, createSSN());
+                testWedding3 = new entities_1.Wedding(0, "2022/01/10", "Chicago, IL", "Daphne and Fred", 12000, createSSN());
+                return [4 /*yield*/, weddingDAO.weddingCreator(testWedding1)];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, weddingDAO.weddingCreator(testWedding2)];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, weddingDAO.weddingCreator(testWedding3)];
+            case 3:
+                _a.sent();
+                return [4 /*yield*/, weddingDAO.allWeddings()];
+            case 4:
+                result = _a.sent();
+                expect(result.length).toBeGreaterThanOrEqual(3);
+                return [2 /*return*/];
+        }
+    });
+}); });
+test("Find our wedding by ID: ", function () { return __awaiter(void 0, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, expensesDAO.createExpenses(testExpenses)];
+            case 0: return [4 /*yield*/, weddingDAO.weddingByID(3)];
             case 1:
                 result = _a.sent();
-                expect(result.expensesId).not.toBe(0);
+                expect(result.weddingID).toBe(3);
                 return [2 /*return*/];
         }
     });
 }); });
-test("Get an expense by id", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var expenses, retrievedExpenses;
+test("Update our wedding: ", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var testWedding, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                expenses = new entities_1.Expenses("Need for wedding", 50, 0, testWedding.weddingId + 1);
-                return [4 /*yield*/, expensesDAO.createExpenses(expenses)];
+                testWedding = new entities_1.Wedding(8, "2025/14/04", "Houston, TX", "Angela and Dwight", 14000, 998866);
+                return [4 /*yield*/, weddingDAO.updateWedding(testWedding)];
             case 1:
-                expenses = _a.sent();
-                return [4 /*yield*/, expensesDAO.getExpensesById(expenses.expensesId)];
-            case 2:
-                retrievedExpenses = _a.sent();
-                expect(retrievedExpenses.expensesId).toBe(expenses.expensesId);
+                result = _a.sent();
+                expect(result.weddingLocation).toBe(testWedding.weddingLocation);
                 return [2 /*return*/];
         }
     });
 }); });
-test("Get all expenses", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var expenses1, expenses2, expenses3, allExpenses;
+test("Delete the wedding by ID: ", function () { return __awaiter(void 0, void 0, void 0, function () {
+    var testWedding1, wedding, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                expenses1 = new entities_1.Expenses("Need for wedding", 45, 0, testWedding.weddingId + 1);
-                expenses2 = new entities_1.Expenses("Need for wedding", 500, 0, testWedding.weddingId + 1);
-                expenses3 = new entities_1.Expenses("Need for wedding", 10, 0, testWedding.weddingId + 1);
-                return [4 /*yield*/, expensesDAO.createExpenses(expenses1)];
+                testWedding1 = new entities_1.Wedding(0, "2022/08/21", "Sacramento, CA", "Jan and Michael", 33000, createSSN());
+                return [4 /*yield*/, weddingDAO.weddingCreator(testWedding1)];
             case 1:
-                _a.sent();
-                return [4 /*yield*/, expensesDAO.createExpenses(expenses2)];
-            case 2:
-                _a.sent();
-                return [4 /*yield*/, expensesDAO.createExpenses(expenses3)];
-            case 3:
-                _a.sent();
-                return [4 /*yield*/, expensesDAO.getAllExpenses()];
-            case 4:
-                allExpenses = _a.sent();
-                expect(allExpenses.length).toBeGreaterThanOrEqual(3);
-                return [2 /*return*/];
-        }
-    });
-}); });
-test("Update expenses", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var targetedExpenses;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                targetedExpenses = new entities_1.Expenses("Need for the wedding", 1000, 0, testWedding.weddingId + 1);
-                return [4 /*yield*/, expensesDAO.createExpenses(targetedExpenses)];
-            case 1:
-                targetedExpenses = _a.sent();
-                targetedExpenses.expensesAmount = 500;
-                return [4 /*yield*/, expensesDAO.updateExpenses(targetedExpenses)];
-            case 2:
-                targetedExpenses = _a.sent();
-                expect(targetedExpenses.expensesAmount).toBe(500);
-                return [2 /*return*/];
-        }
-    });
-}); });
-test("Delete an expense", function () { return __awaiter(void 0, void 0, void 0, function () {
-    var targetedExpenses, result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                targetedExpenses = new entities_1.Expenses("Need for the wedding", 700, 0, testWedding.weddingId + 1);
-                return [4 /*yield*/, expensesDAO.createExpenses(targetedExpenses)];
-            case 1:
-                targetedExpenses = _a.sent();
-                return [4 /*yield*/, expensesDAO.deleteExpensesById(targetedExpenses.expensesId)];
+                wedding = _a.sent();
+                return [4 /*yield*/, weddingDAO.deleteWedding(wedding.weddingID)];
             case 2:
                 result = _a.sent();
                 expect(result).toBeTruthy();
@@ -133,7 +131,11 @@ test("Delete an expense", function () { return __awaiter(void 0, void 0, void 0,
 }); });
 afterAll(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        connection_1.client.end();
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, connection_1.client.end()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
     });
 }); });

@@ -13,10 +13,10 @@ const createSSN = function () {
 test("Create our first wedding account: ", async () => {
   const testWedding: Wedding = new Wedding(
     0,
-    "2022/21/09",
-    "The Bradbury",
-    "Johnsons",
-    50000,
+    "2022/11/12",
+    "Austin, TX",
+    "Jane and Smith",
+    30000,
     createSSN()
   );
   const result: Wedding = await weddingDAO.weddingCreator(testWedding);
@@ -25,26 +25,26 @@ test("Create our first wedding account: ", async () => {
 test("Create our 3 additional weddings: ", async () => {
   const testWedding1: Wedding = new Wedding(
     0,
-    "2022/21/09",
-    "The Union",
-    "Jeffersons",
-    50000,
+    "2021/13/12",
+    "New York City, NY",
+    "Samantha and Spencer",
+    25000,
     createSSN()
   );
   const testWedding2: Wedding = new Wedding(
     0,
-    "2022/22/09",
-    "The Bradbury",
-    "Ranieris",
-    50000,
+    "2022/10/01",
+    "Los Angeles, CA",
+    "Elizabeth and Robert",
+    15000,
     createSSN()
   );
   const testWedding3: Wedding = new Wedding(
     0,
-    "2022/21/09",
-    "Castle",
-    "Baltics",
-    50000,
+    "2022/01/10",
+    "Chicago, IL",
+    "Daphne and Fred",
+    12000,
     createSSN()
   );
   await weddingDAO.weddingCreator(testWedding1);
@@ -60,11 +60,11 @@ test("Find our wedding by ID: ", async () => {
 test("Update our wedding: ", async () => {
   const testWedding: Wedding = new Wedding(
     8,
-    "2022/21/09",
-    "Antioque",
-    "Brotherbees",
-    5000,
-    123456
+    "2025/14/04",
+    "Houston, TX",
+    "Angela and Dwight",
+    14000,
+    998866
   );
   const result: Wedding = await weddingDAO.updateWedding(testWedding);
   expect(result.weddingLocation).toBe(testWedding.weddingLocation);
@@ -72,10 +72,10 @@ test("Update our wedding: ", async () => {
 test("Delete the wedding by ID: ", async () => {
   const testWedding1: Wedding = new Wedding(
     0,
-    "2024/01/12",
-    "Applebees",
-    "Smiths",
-    50,
+    "2022/08/21",
+    "Sacramento, CA",
+    "Jan and Michael",
+    33000,
     createSSN()
   );
   const wedding = await weddingDAO.weddingCreator(testWedding1);

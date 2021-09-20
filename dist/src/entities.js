@@ -1,24 +1,25 @@
 "use strict";
 exports.__esModule = true;
-exports.Expenses = exports.Wedding = void 0;
+exports.Expense = exports.Wedding = void 0;
 var Wedding = /** @class */ (function () {
-    function Wedding(weddingId, weddingDate, weddingLocation, weddingName, weddingBudget) {
-        this.weddingId = weddingId;
+    function Wedding(weddingID, weddingDate, weddingLocation, weddingName, weddingBudget, ssn) {
+        this.weddingID = weddingID;
         this.weddingDate = weddingDate;
         this.weddingLocation = weddingLocation;
         this.weddingName = weddingName;
         this.weddingBudget = weddingBudget;
+        this.ssn = ssn;
     }
     return Wedding;
 }());
 exports.Wedding = Wedding;
-var Expenses = /** @class */ (function () {
-    function Expenses(expensesReason, expensesAmount, expensesId, weddingId) {
-        this.expensesReason = expensesReason;
-        this.expensesAmount = expensesAmount;
-        this.expensesId = expensesId;
-        this.weddingId = weddingId;
+var Expense = /** @class */ (function () {
+    function Expense(expenseID, expenseReason, expenseAmount, weddingID) {
+        this.expenseID = expenseID;
+        this.expenseReason = expenseReason;
+        this.expenseAmount = expenseAmount;
+        this.weddingID = weddingID;
     }
-    return Expenses;
+    return Expense;
 }());
-exports.Expenses = Expenses;
+exports.Expense = Expense;

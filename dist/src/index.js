@@ -1,13 +1,4 @@
 "use strict";
-/*
-Routes I still need
-    x GET /weddings/:id/expenses
-    x GET /expenses
-    x GET /expenses/:id
-    x POST /expenses/:id
-    x PUT /expenses/:id
-    x DELETE /expenses/:id
-*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,29 +39,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var express = require('express');
-var errors_1 = require("./errors");
-var expenses_service_impl_1 = require("./services/expenses-service-impl");
-var wedding_service_impl_1 = require("./services/wedding-service-impl");
+var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
-var app = express();
-app.use(express.json());
+var wedding_service_impl_1 = require("./services/wedding-service-impl");
+var expense_service_impl_1 = require("./services/expense-service-impl");
+var errors_1 = require("./errors");
+var app = (0, express_1["default"])();
+app.use(express_1["default"].json());
 app.use((0, cors_1["default"])());
-var PORT = process.env.PORT || 3000;
 var weddingService = new wedding_service_impl_1.WeddingServiceImpl();
-var expensesService = new expenses_service_impl_1.ExpensesServiceImpl();
-// POST /weddings
-app.post("/weddings", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var wedding, error_1;
+var expenseService = new expense_service_impl_1.ExpenseServiceImpl();
+app.get("/weddings", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, weddingService.allWeddings()];
+            case 1:
+                result = _a.sent();
+                res.status(200);
+                res.send(result);
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var weddingID, result, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                wedding = req.body;
-                return [4 /*yield*/, weddingService.registerWedding(wedding)];
+                weddingID = Number(req.params.id);
+                return [4 /*yield*/, weddingService.weddingByID(weddingID)];
             case 1:
-                wedding = _a.sent();
-                res.send(wedding);
+                result = _a.sent();
+                res.send(result);
                 return [3 /*break*/, 3];
             case 2:
                 error_1 = _a.sent();
@@ -83,70 +85,72 @@ app.post("/weddings", function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
-// GET /weddings
-app.get("/weddings", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var weddings, error_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, weddingService.retrieveAllWeddings()];
-            case 1:
-                weddings = _a.sent();
-                res.status(200);
-                res.send(weddings);
-                return [3 /*break*/, 3];
-            case 2:
-                error_2 = _a.sent();
-                if (error_2 instanceof errors_1.MissingResourceError) {
-                    res.status(404);
-                    res.send(error_2);
-                }
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-// GET /weddings/:id
-app.get("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var weddingId, newWedding, wedding, error_3;
+app.get("/weddings/:id/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var weddingID, result, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                weddingId = Number(req.params.id);
-                return [4 /*yield*/, weddingService.retrieveWeddingById(weddingId)];
+                weddingID = Number(req.params.id);
+                return [4 /*yield*/, weddingService.weddingByID(weddingID)];
             case 1:
-                newWedding = _a.sent();
-                return [4 /*yield*/, weddingService.updateWedding(newWedding)];
+                _a.sent();
+                return [4 /*yield*/, expenseService.expensesByWedID(weddingID)];
             case 2:
-                wedding = _a.sent();
-                res.send(wedding);
+                result = _a.sent();
+                res.send(result);
                 return [3 /*break*/, 4];
             case 3:
-                error_3 = _a.sent();
-                if (error_3 instanceof errors_1.MissingResourceError) {
+                error_2 = _a.sent();
+                if (error_2 instanceof errors_1.ExpensesError) {
                     res.status(404);
-                    res.send(error_3);
+                    res.send(error_2);
+                }
+                if (error_2 instanceof errors_1.MissingResourceError) {
+                    res.status(404);
+                    res.send(error_2);
                 }
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
-// DELETE /weddings/:id
-app["delete"]("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var weddingId, error_4;
+app.post("/weddings", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var wedding, result, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                weddingId = Number(req.params.id);
-                return [4 /*yield*/, weddingService.removeWeddingById(weddingId)];
+                wedding = req.body;
+                return [4 /*yield*/, weddingService.createWedding(wedding)];
             case 1:
-                _a.sent();
+                result = _a.sent();
+                res.status(201);
+                res.send(result);
+                return [3 /*break*/, 3];
+            case 2:
+                error_3 = _a.sent();
+                if (error_3 instanceof errors_1.WeddingExists) {
+                    res.status(409);
+                    res.send(error_3);
+                }
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app["delete"]("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var weddingID, result, error_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                weddingID = Number(req.params.id);
+                return [4 /*yield*/, weddingService.deleteWedding(weddingID)];
+            case 1:
+                result = _a.sent();
                 res.status(205);
-                res.send(weddingId + " has been deleted.");
+                res.send("The wedding id of " + weddingID + " has been removed from our database.");
                 return [3 /*break*/, 3];
             case 2:
                 error_4 = _a.sent();
@@ -159,19 +163,18 @@ app["delete"]("/weddings/:id", function (req, res) { return __awaiter(void 0, vo
         }
     });
 }); });
-// PUT /weddings/:id
 app.put("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var weddingId, other, wedding, error_5;
+    var wedding, weddingID, result, error_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                weddingId = Number(req.params.id);
-                other = req.body;
-                return [4 /*yield*/, weddingService.updateWedding(other)];
+                wedding = req.body;
+                weddingID = Number(req.params.id);
+                return [4 /*yield*/, weddingService.updateWedding(wedding, weddingID)];
             case 1:
-                wedding = _a.sent();
-                res.send(wedding);
+                result = _a.sent();
+                res.send(result);
                 return [3 /*break*/, 3];
             case 2:
                 error_5 = _a.sent();
@@ -179,29 +182,38 @@ app.put("/weddings/:id", function (req, res) { return __awaiter(void 0, void 0, 
                     res.status(404);
                     res.send(error_5);
                 }
+                if (error_5 instanceof errors_1.ConflictingIdentifications) {
+                    res.status(409);
+                    res.send(error_5);
+                }
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); });
-// GET /weddings/:id/expenses
-app.get("/weddings/:id/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var targetWeddingExpense, currentId, weddingExpenses, i, error_6;
+app.get("/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, expenseService.allExpense()];
+            case 1:
+                result = _a.sent();
+                res.send(result);
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var expenseID, result, error_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                targetWeddingExpense = [];
-                currentId = Number(req.params.id);
-                return [4 /*yield*/, expensesService.retrieveAllExpenses()];
+                expenseID = Number(req.params.id);
+                return [4 /*yield*/, expenseService.expenseByID(expenseID)];
             case 1:
-                weddingExpenses = _a.sent();
-                for (i = 0; i < weddingExpenses.length; i++) {
-                    if (weddingExpenses[i].weddingId === currentId) {
-                        targetWeddingExpense.push(weddingExpenses[i]);
-                    }
-                }
-                res.send(targetWeddingExpense);
+                result = _a.sent();
+                res.send(result);
                 return [3 /*break*/, 3];
             case 2:
                 error_6 = _a.sent();
@@ -214,18 +226,33 @@ app.get("/weddings/:id/expenses", function (req, res) { return __awaiter(void 0,
         }
     });
 }); });
-// GET /expenses
-app.get("/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var expenses, error_7;
+app.post("/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var expense, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                expense = req.body;
+                return [4 /*yield*/, expenseService.createExpense(expense)];
+            case 1:
+                result = _a.sent();
+                res.status(201);
+                res.send(result);
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.put("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var expenseID, expense, result, error_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, expensesService.retrieveAllExpenses()];
+                expenseID = Number(req.params.id);
+                expense = req.body;
+                return [4 /*yield*/, expenseService.updateExpense(expense, expenseID)];
             case 1:
-                expenses = _a.sent();
-                res.status(200);
-                res.send(expenses);
+                result = _a.sent();
+                res.send(result);
                 return [3 /*break*/, 3];
             case 2:
                 error_7 = _a.sent();
@@ -233,23 +260,26 @@ app.get("/expenses", function (req, res) { return __awaiter(void 0, void 0, void
                     res.status(404);
                     res.send(error_7);
                 }
+                if (error_7 instanceof errors_1.ConflictingIdentifications) {
+                    res.status(409);
+                    res.send(error_7);
+                }
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); });
-// GET /expenses/:id
-app.get("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var expensesId, expenses, error_8;
+app["delete"]("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var expenseID, result, error_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                expensesId = Number(req.params.id);
-                return [4 /*yield*/, expensesService.retrieveExpensesById(expensesId)];
+                expenseID = Number(req.params.id);
+                return [4 /*yield*/, expenseService.deleteExpense(expenseID)];
             case 1:
-                expenses = _a.sent();
-                res.send(expenses);
+                result = _a.sent();
+                res.send("The expense with " + expenseID + " has been removed from our database. ");
                 return [3 /*break*/, 3];
             case 2:
                 error_8 = _a.sent();
@@ -262,86 +292,7 @@ app.get("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, 
         }
     });
 }); });
-// POST /expenses
-app.post("/expenses", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var expenses, error_9;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                expenses = req.body;
-                return [4 /*yield*/, expensesService.registerExpenses(expenses)];
-            case 1:
-                expenses = _a.sent();
-                res.status(201);
-                res.send(expenses);
-                return [3 /*break*/, 3];
-            case 2:
-                error_9 = _a.sent();
-                if (error_9 instanceof errors_1.MissingResourceError) {
-                    res.status(404);
-                    res.send(error_9);
-                }
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-/*
-app.put("/weddings/:id", async(req,res) => {
-    try {
-        const weddingId = Number(req.params.id);
-        // const newWedding:Wedding = await weddingService.retrieveWeddingById(weddingId);
-        const other = req.body;
-        const wedding = await weddingService.updateWedding(other);
-        res.send(wedding);
-    } catch (error) {
-        if (error instanceof MissingResourceError) {
-            res.status(404);
-            res.send(error);
-        }
-    }
-})
-*/
-// PUT /expenses/:id
-app.put("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var expensesId, other, expenses, error_10;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                expensesId = Number(req.params.id);
-                other = req.body;
-                return [4 /*yield*/, expensesService.editExpenses(other)];
-            case 1:
-                expenses = _a.sent();
-                res.send(expenses);
-                return [3 /*break*/, 3];
-            case 2:
-                error_10 = _a.sent();
-                if (errors_1.MissingResourceError) {
-                    res.status(404);
-                    res.send(error_10);
-                }
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-// DELETE /expenses/:id
-app["delete"]("/expenses/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        try {
-        }
-        catch (error) {
-            if (error instanceof errors_1.MissingResourceError) {
-                res.status(404);
-                res.send(errors_1.MissingResourceError);
-            }
-        }
-        return [2 /*return*/];
-    });
-}); });
+var PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
-    console.log("Wedding Application running on port " + PORT + "!");
+    console.log("Application started on PORT " + PORT);
 });

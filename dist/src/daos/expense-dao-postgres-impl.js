@@ -36,112 +36,139 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.ExpensesDaoPostgres = void 0;
-var entities_1 = require("../entities");
 var connection_1 = require("../connection");
+var entities_1 = require("../entities");
 var errors_1 = require("../errors");
-var ExpensesDaoPostgres = /** @class */ (function () {
-    function ExpensesDaoPostgres() {
+var ExpenseDAOImpl = /** @class */ (function () {
+    function ExpenseDAOImpl() {
     }
-    ExpensesDaoPostgres.prototype.createExpenses = function (expenses) {
+    ExpenseDAOImpl.prototype.expenseCreator = function (expense) {
         return __awaiter(this, void 0, void 0, function () {
             var sql, values, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = "insert into expenses(expenses_reason, expenses_amount, w_id) values ($1, $2, $3) returning expenses_id";
-                        values = [expenses.expensesReason, expenses.expensesAmount, expenses.weddingId];
+                        sql = "insert into expense(expense_reason,expense_amount,w_id) values ($1,$2,$3) returning expense_id";
+                        values = [
+                            expense.expenseReason,
+                            expense.expenseAmount,
+                            expense.weddingID,
+                        ];
                         return [4 /*yield*/, connection_1.client.query(sql, values)];
                     case 1:
                         result = _a.sent();
-                        expenses.expensesId = result.rows[0].expenses_id;
-                        return [2 /*return*/, expenses];
+                        expense.expenseID = result.rows[0].expense_id;
+                        return [2 /*return*/, expense];
                 }
             });
         });
     };
-    ExpensesDaoPostgres.prototype.getExpensesById = function (expensesId) {
+    ExpenseDAOImpl.prototype.allExpenses = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, value, result, row, expenses;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        sql = "select * from expenses where expenses_id=$1";
-                        value = [expensesId];
-                        return [4 /*yield*/, connection_1.client.query(sql, value)];
-                    case 1:
-                        result = _a.sent();
-                        console.log("Result:", result);
-                        if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The expenses with the id of " + expensesId + " does not exist.");
-                        }
-                        row = result.rows[0];
-                        console.log("Row:", row);
-                        expenses = new entities_1.Expenses(row.expenses_reason, row.expenses_amount, row.expenses_id, row.w_id);
-                        return [2 /*return*/, expenses];
-                }
-            });
-        });
-    };
-    ExpensesDaoPostgres.prototype.getAllExpenses = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var sql, result, allExpenses, _i, _a, row, expenses;
+            var sql, result, expenses, _i, _a, row, expense;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        sql = "select * from expenses";
+                        sql = "select * from expense";
                         return [4 /*yield*/, connection_1.client.query(sql)];
                     case 1:
                         result = _b.sent();
-                        allExpenses = [];
+                        expenses = [];
                         for (_i = 0, _a = result.rows; _i < _a.length; _i++) {
                             row = _a[_i];
-                            expenses = new entities_1.Expenses(row.expenses_reason, row.expenses_amount, row.expenses_id, row.w_id);
-                            allExpenses.push(expenses);
-                        }
-                        return [2 /*return*/, allExpenses];
-                }
-            });
-        });
-    };
-    ExpensesDaoPostgres.prototype.updateExpenses = function (expenses) {
-        return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        sql = "update expenses set expenses_reason=$1, expenses_amount=$2, w_id=$3 where expenses_id=$4";
-                        values = [expenses.expensesReason, expenses.expensesAmount, expenses.weddingId, expenses.expensesId];
-                        return [4 /*yield*/, connection_1.client.query(sql, values)];
-                    case 1:
-                        result = _a.sent();
-                        if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The expenses with the id of " + expenses.expensesId + " does not exist.");
+                            expense = new entities_1.Expense(row.expense_id, row.expense_reason, row.expense_amount, row.w_id);
+                            expenses.push(expense);
                         }
                         return [2 /*return*/, expenses];
                 }
             });
         });
     };
-    ExpensesDaoPostgres.prototype.deleteExpensesById = function (expensesId) {
+    ExpenseDAOImpl.prototype.expenseByID = function (expenseID) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result;
+            var sql, value, result, row, expense;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = 'delete from expenses where expenses_id=$1';
-                        values = [expensesId];
-                        return [4 /*yield*/, connection_1.client.query(sql, values)];
+                        sql = "select * from expense where expense_id=$1";
+                        value = [expenseID];
+                        return [4 /*yield*/, connection_1.client.query(sql, value)];
                     case 1:
                         result = _a.sent();
                         if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The expenses with the id of " + expensesId + " does not exist.");
+                            throw new errors_1.MissingResourceError("The expense with ID " + expenseID + " does not exist in our systems");
                         }
+                        row = result.rows[0];
+                        expense = new entities_1.Expense(row.expense_id, row.expense_reason, row.expense_amount, row.w_id);
+                        return [2 /*return*/, expense];
+                }
+            });
+        });
+    };
+    ExpenseDAOImpl.prototype.expensesByWedID = function (weddingID) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sql, value, result, expenses, _i, _a, row, expense;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        sql = "select * from expense where w_id=$1";
+                        value = [weddingID];
+                        return [4 /*yield*/, connection_1.client.query(sql, value)];
+                    case 1:
+                        result = _b.sent();
+                        if (result.rowCount === 0) {
+                            throw new errors_1.ExpensesError("The wedding id " + weddingID + " does not contain any expenses.");
+                        }
+                        expenses = [];
+                        for (_i = 0, _a = result.rows; _i < _a.length; _i++) {
+                            row = _a[_i];
+                            expense = new entities_1.Expense(row.expense_id, row.expense_reason, row.expense_amount, row.w_id);
+                            expenses.push(expense);
+                        }
+                        return [2 /*return*/, expenses];
+                }
+            });
+        });
+    };
+    ExpenseDAOImpl.prototype.updateExpense = function (expense) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sql, values, result, row, expenseReturn;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        sql = "update expense set expense_reason=$1,expense_amount=$2, w_id=$3 where expense_id=$4";
+                        values = [
+                            expense.expenseReason,
+                            expense.expenseAmount,
+                            expense.weddingID,
+                            expense.expenseID,
+                        ];
+                        return [4 /*yield*/, connection_1.client.query(sql, values)];
+                    case 1:
+                        result = _a.sent();
+                        row = result.rows[0];
+                        expenseReturn = new entities_1.Expense(row.expense_id, row.expense_reason, row.expense_amount, row.w_id);
+                        return [2 /*return*/, expenseReturn];
+                }
+            });
+        });
+    };
+    ExpenseDAOImpl.prototype.deleteExpense = function (expenseID) {
+        return __awaiter(this, void 0, void 0, function () {
+            var sql, value;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        sql = "delete from expense where expense_id=$1";
+                        value = [expenseID];
+                        return [4 /*yield*/, connection_1.client.query(sql, value)];
+                    case 1:
+                        _a.sent();
                         return [2 /*return*/, true];
                 }
             });
         });
     };
-    return ExpensesDaoPostgres;
+    return ExpenseDAOImpl;
 }());
-exports.ExpensesDaoPostgres = ExpensesDaoPostgres;
+exports["default"] = ExpenseDAOImpl;

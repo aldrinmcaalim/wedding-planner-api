@@ -169,6 +169,8 @@ app.delete("/expenses/:id", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Application started");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Application started on PORT ${PORT}`);
 });

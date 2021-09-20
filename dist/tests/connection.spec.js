@@ -44,14 +44,17 @@ test("Should have a connection ", function () { return __awaiter(void 0, void 0,
             case 0: return [4 /*yield*/, connection_1.client.query("select * from wedding")];
             case 1:
                 result = _a.sent();
-                console.log(result);
                 return [2 /*return*/];
         }
     });
 }); });
 afterAll(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        connection_1.client.end();
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, connection_1.client.end()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
     });
 }); });

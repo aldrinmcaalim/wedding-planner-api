@@ -39,48 +39,67 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.WeddingServiceImpl = void 0;
-var wedding_dao_postgres_impl_1 = __importDefault(require("../daos/wedding-dao-postgres-impl"));
+exports.ExpenseServiceImpl = void 0;
+var expense_dao_postgres_impl_1 = __importDefault(require("../daos/expense-dao-postgres-impl"));
 var errors_1 = require("../errors");
-var WeddingServiceImpl = /** @class */ (function () {
-    function WeddingServiceImpl() {
-        this.weddingDAO = new wedding_dao_postgres_impl_1["default"]();
+var ExpenseServiceImpl = /** @class */ (function () {
+    function ExpenseServiceImpl() {
+        this.expenseDAO = new expense_dao_postgres_impl_1["default"]();
     }
-    WeddingServiceImpl.prototype.createWedding = function (wedding) {
-        return this.weddingDAO.weddingCreator(wedding);
+    ExpenseServiceImpl.prototype.createExpense = function (expense) {
+        return this.expenseDAO.expenseCreator(expense);
     };
-    WeddingServiceImpl.prototype.allWeddings = function () {
-        return this.weddingDAO.allWeddings();
+    ExpenseServiceImpl.prototype.allExpense = function () {
+        return this.expenseDAO.allExpenses();
     };
-    WeddingServiceImpl.prototype.weddingByID = function (weddingID) {
+    ExpenseServiceImpl.prototype.expenseByID = function (expenseID) {
         return __awaiter(this, void 0, void 0, function () {
-            var wedding;
+            var expense;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.weddingDAO.weddingByID(weddingID)];
+                    case 0: return [4 /*yield*/, this.expenseDAO.expenseByID(expenseID)];
                     case 1:
-                        wedding = _a.sent();
-                        return [2 /*return*/, wedding];
+                        expense = _a.sent();
+                        if (expense.expenseID != expenseID) {
+                            throw new errors_1.MissingResourceError("The expense id " + expenseID + " does not exist in the database.");
+                        }
+                        return [2 /*return*/, expense];
                 }
             });
         });
     };
-    WeddingServiceImpl.prototype.updateWedding = function (wedding, weddingID) {
+    ExpenseServiceImpl.prototype.expensesByWedID = function (weddingID) {
         return __awaiter(this, void 0, void 0, function () {
-            var wedTest;
+            var expenses;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.expenseDAO.expensesByWedID(weddingID)];
+                    case 1:
+                        expenses = _a.sent();
+                        if (expenses[0].weddingID != weddingID) {
+                            throw new errors_1.ExpensesError("There are no expenses for wedding id " + weddingID);
+                        }
+                        return [2 /*return*/, expenses];
+                }
+            });
+        });
+    };
+    ExpenseServiceImpl.prototype.updateExpense = function (expense, expenseID) {
+        return __awaiter(this, void 0, void 0, function () {
+            var expTest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(weddingID != wedding.weddingID)) return [3 /*break*/, 1];
-                        throw new errors_1.ConflictingIdentifications("You entered in information for wedding ID: " + wedding.weddingID + " but have wedding ID: " + weddingID + " selected. Please correct accordingly");
-                    case 1: return [4 /*yield*/, this.weddingDAO.weddingByID(weddingID)];
+                        if (!(expense.expenseID != expenseID)) return [3 /*break*/, 1];
+                        throw new errors_1.ConflictingIdentifications("You entered in information for expense ID: " + expense.expenseID + " but have expense ID: " + expenseID + " selected. Please correct accordingly");
+                    case 1: return [4 /*yield*/, this.expenseDAO.expenseByID(expenseID)];
                     case 2:
-                        wedTest = _a.sent();
-                        if (wedTest.weddingID != weddingID) {
-                            throw new errors_1.MissingResourceError("There is no wedding under the id " + weddingID);
+                        expTest = _a.sent();
+                        if (expTest.expenseID != expenseID) {
+                            throw new errors_1.MissingResourceError("The expense id " + expenseID + " does not exist in the database.");
                         }
                         else {
-                            return [2 /*return*/, this.weddingDAO.updateWedding(wedding)];
+                            return [2 /*return*/, this.expenseDAO.updateExpense(expense)];
                         }
                         _a.label = 3;
                     case 3: return [2 /*return*/];
@@ -88,22 +107,22 @@ var WeddingServiceImpl = /** @class */ (function () {
             });
         });
     };
-    WeddingServiceImpl.prototype.deleteWedding = function (weddingID) {
+    ExpenseServiceImpl.prototype.deleteExpense = function (expenseID) {
         return __awaiter(this, void 0, void 0, function () {
-            var wedding;
+            var expense;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.weddingDAO.weddingByID(weddingID)];
+                    case 0: return [4 /*yield*/, this.expenseDAO.expenseByID(expenseID)];
                     case 1:
-                        wedding = _a.sent();
-                        if (wedding.weddingID != weddingID) {
-                            throw new errors_1.MissingResourceError("There is no wedding under the id " + weddingID);
+                        expense = _a.sent();
+                        if (expense.expenseID != expenseID) {
+                            throw new errors_1.MissingResourceError("The expense id " + expenseID + " does not exist in the database.");
                         }
-                        return [2 /*return*/, this.weddingDAO.deleteWedding(weddingID)];
+                        return [2 /*return*/, this.expenseDAO.deleteExpense(expenseID)];
                 }
             });
         });
     };
-    return WeddingServiceImpl;
+    return ExpenseServiceImpl;
 }());
-exports.WeddingServiceImpl = WeddingServiceImpl;
+exports.ExpenseServiceImpl = ExpenseServiceImpl;

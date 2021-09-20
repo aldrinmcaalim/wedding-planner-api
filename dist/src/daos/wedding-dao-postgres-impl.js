@@ -36,31 +36,43 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.WeddingDaoPostgres = void 0;
-var entities_1 = require("../entities");
 var connection_1 = require("../connection");
+var entities_1 = require("../entities");
 var errors_1 = require("../errors");
-var WeddingDaoPostgres = /** @class */ (function () {
-    function WeddingDaoPostgres() {
+var WeddingDaoImpl = /** @class */ (function () {
+    function WeddingDaoImpl() {
     }
-    WeddingDaoPostgres.prototype.createWedding = function (wedding) {
+    WeddingDaoImpl.prototype.weddingCreator = function (wedding) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result;
+            var ssnTest, valTest, resTest, sql, values, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = "insert into wedding(wedding_date, wedding_location, wedding_name, wedding_budget) values ($1, $2, $3, $4) returning wedding_id";
-                        values = [wedding.weddingDate, wedding.weddingLocation, wedding.weddingName, wedding.weddingBudget];
-                        return [4 /*yield*/, connection_1.client.query(sql, values)];
+                        ssnTest = "select * from wedding where ssn = $1";
+                        valTest = [wedding.ssn];
+                        return [4 /*yield*/, connection_1.client.query(ssnTest, valTest)];
                     case 1:
+                        resTest = _a.sent();
+                        if (!(resTest.rowCount === 0)) return [3 /*break*/, 3];
+                        sql = "insert into wedding(wedding_date,wedding_location, wedding_name, wedding_budget, ssn) values ($1,$2,$3,$4,$5) returning wedding_id";
+                        values = [
+                            wedding.weddingDate,
+                            wedding.weddingLocation,
+                            wedding.weddingName,
+                            wedding.weddingBudget,
+                            wedding.ssn,
+                        ];
+                        return [4 /*yield*/, connection_1.client.query(sql, values)];
+                    case 2:
                         result = _a.sent();
-                        wedding.weddingId = result.rows[0].wedding_id;
+                        wedding.weddingID = result.rows[0].wedding_id;
                         return [2 /*return*/, wedding];
+                    case 3: throw new errors_1.WeddingExists("The wedding already exist within the data base under the wedding ID " + wedding.weddingID + " with an SSN being " + wedding.ssn);
                 }
             });
         });
     };
-    WeddingDaoPostgres.prototype.getAllWeddings = function () {
+    WeddingDaoImpl.prototype.allWeddings = function () {
         return __awaiter(this, void 0, void 0, function () {
             var sql, result, weddings, _i, _a, row, wedding;
             return __generator(this, function (_b) {
@@ -73,7 +85,7 @@ var WeddingDaoPostgres = /** @class */ (function () {
                         weddings = [];
                         for (_i = 0, _a = result.rows; _i < _a.length; _i++) {
                             row = _a[_i];
-                            wedding = new entities_1.Wedding(row.wedding_id, row.wedding_date, row.wedding_location, row.wedding_name, row.wedding_budget);
+                            wedding = new entities_1.Wedding(row.wedding_id, row.wedding_date, row.wedding_location, row.wedding_name, row.wedding_budget, row.ssn);
                             weddings.push(wedding);
                         }
                         return [2 /*return*/, weddings];
@@ -81,75 +93,73 @@ var WeddingDaoPostgres = /** @class */ (function () {
             });
         });
     };
-    WeddingDaoPostgres.prototype.getWeddingById = function (weddingId) {
+    WeddingDaoImpl.prototype.weddingByID = function (weddingID) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result, row, theWedding;
+            var sql, values, result, row, wedding;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = "select * from wedding where wedding_id = $1";
-                        values = [weddingId];
+                        sql = "select * from wedding where wedding_id=$1";
+                        values = [weddingID];
                         return [4 /*yield*/, connection_1.client.query(sql, values)];
                     case 1:
                         result = _a.sent();
                         if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The wedding with id " + weddingId + " does not exist.");
+                            throw new errors_1.MissingResourceError("The wedding with ID " + weddingID + " does not exist in our systems");
                         }
                         row = result.rows[0];
-                        theWedding = new entities_1.Wedding(row.wedding_id, row.wedding_date, row.wedding_location, row.wedding_name, row.wedding_budget);
-                        // console.log("theWedding:", theWedding);
-                        return [2 /*return*/, theWedding];
+                        wedding = new entities_1.Wedding(row.wedding_id, row.wedding_date, row.wedding_location, row.wedding_name, row.wedding_budget, row.ssn);
+                        return [2 /*return*/, wedding];
                 }
             });
         });
     };
-    /*
-        async createWedding(wedding: Wedding): Promise<Wedding> {
-            const sql:string = "insert into wedding(wedding_date, wedding_location, wedding_name, wedding_budget) values ($1, $2, $3, $4) returning wedding_id";
-            const values = [wedding.weddingDate, wedding.weddingLocation, wedding.weddingName, wedding.weddingBudget];
-            const result = await client.query(sql, values);
-            wedding.weddingId = result.rows[0].wedding_id;
-            return wedding;
-            }
-    */
-    WeddingDaoPostgres.prototype.updateWedding = function (updateWedding) {
+    WeddingDaoImpl.prototype.updateWedding = function (wedding) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result;
+            var sql, values, result, row, weddingReturn;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = "update wedding set wedding_date=$1, wedding_location=$2, wedding_name=$3, wedding_budget=$4 where wedding_id=$5";
-                        values = [updateWedding.weddingDate, updateWedding.weddingLocation, updateWedding.weddingName, updateWedding.weddingBudget, updateWedding.weddingId];
+                        sql = "update wedding set wedding_date=$1,wedding_location=$2,wedding_name=$3,wedding_budget=$4,ssn=$5 where wedding_id=$6";
+                        values = [
+                            wedding.weddingDate,
+                            wedding.weddingLocation,
+                            wedding.weddingName,
+                            wedding.weddingBudget,
+                            wedding.ssn,
+                            wedding.weddingID,
+                        ];
                         return [4 /*yield*/, connection_1.client.query(sql, values)];
                     case 1:
                         result = _a.sent();
-                        if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The client with id " + updateWedding.weddingId + " does not exist.");
-                        }
-                        return [2 /*return*/, updateWedding];
+                        row = result.rows[0];
+                        weddingReturn = new entities_1.Wedding(row.wedding_id, row.wedding_date, row.wedding_location, row.wedding_name, row.wedding_budget, row.ssn);
+                        return [2 /*return*/, weddingReturn];
                 }
             });
         });
     };
-    WeddingDaoPostgres.prototype.deleteWeddingById = function (weddingId) {
+    WeddingDaoImpl.prototype.deleteWedding = function (weddingID) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, values, result;
+            var sql, value, sql2, value2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        sql = "delete from wedding where wedding_id=$1";
-                        values = [weddingId];
-                        return [4 /*yield*/, connection_1.client.query(sql, values)];
+                        sql = "delete from expense where wedding_id=$1";
+                        value = [weddingID];
+                        return [4 /*yield*/, connection_1.client.query(sql, value)];
                     case 1:
-                        result = _a.sent();
-                        if (result.rowCount === 0) {
-                            throw new errors_1.MissingResourceError("The wedding with the id " + weddingId + " does not exist.");
-                        }
+                        _a.sent();
+                        sql2 = "delete from wedding where wedding_id=$1";
+                        value2 = [weddingID];
+                        return [4 /*yield*/, connection_1.client.query(sql2, value2)];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, true];
                 }
             });
         });
     };
-    return WeddingDaoPostgres;
+    return WeddingDaoImpl;
 }());
-exports.WeddingDaoPostgres = WeddingDaoPostgres;
+exports["default"] = WeddingDaoImpl;
